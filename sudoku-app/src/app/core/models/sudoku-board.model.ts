@@ -1,3 +1,3 @@
 import { SudokuCell } from './sudoku-cell.model';
 
-export type SudokuBoard = SudokuCell[][];
+export type SudokuBoardModel = SudokuCell[][];
