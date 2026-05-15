@@ -3,6 +3,23 @@
   <span>Errores: {{ errors }} / {{ maxErrors }}</span>
   <span>Ayudas: {{ helpsUsed }} / {{ maxHelps }}</span>
 </div>
+<div class="records">
+
+  <h3>Top 10 - {{ difficulty }}</h3>
+
+  @for (record of getDifficultyRecords(); track $index) {
+
+    <div class="record-item">
+
+      <span>#{{ $index + 1 }}</span>
+
+      <span>{{ formatRecordTime(record.seconds) }}</span>
+
+    </div>
+
+  }
+
+</div>
 
 <button class="pause-button" (click)="togglePause()">
   {{ paused ? 'Continuar' : 'Pausar' }}

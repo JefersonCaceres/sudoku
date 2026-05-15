@@ -3,7 +3,8 @@ import { CommonModule } from '@angular/common';
 import { SudokuBoardModel } from '../../../../core/models/sudoku-board.model';
 import { Difficulty } from '../../../../core/models/difficulty.model';
 import { SudokuGame } from '../../services/sudoku-game';
-
+import { SudokuStorage } from '../../services/sudoku-storage';
+import { SudokuRecord } from '../../../../core/models/sudoku-record.model';
 
 
 @Component({
@@ -25,12 +26,29 @@ export class Board implements OnInit, OnDestroy{
   gameCompleted = false;
   difficulty: Difficulty = 'easy';
 
-  constructor(private readonly sudokuGame: SudokuGame) {}
+constructor(private readonly sudokuGame: SudokuGame,
+  private readonly sudokuStorage: SudokuStorage) {}
 
   ngOnInit(): void {
+
+  const savedGame = this.sudokuStorage.loadGame();
+
+  if (savedGame) {
+
+    this.board = savedGame.board;
+    this.errors = savedGame.errors;
+    this.helpsUsed = savedGame.helpsUsed;
+    this.difficulty = savedGame.difficulty;
+
+    this.seconds.set(savedGame.seconds);
+
+  } else {
+
     this.newGame(this.difficulty);
-    this.startTimer();
   }
+
+  this.startTimer();
+}
 
   ngOnDestroy(): void {
     if (this.timerId) {
@@ -126,6 +144,7 @@ export class Board implements OnInit, OnDestroy{
 
       cell.error = false;
       this.checkWin();
+      this.saveGame();
     }
 
   @HostListener('window:keydown', ['$event'])
@@ -165,6 +184,7 @@ export class Board implements OnInit, OnDestroy{
 
   cell.value = null;
   cell.error = false;
+  this.saveGame();
 }
 
 helpsUsed = 0;
@@ -193,6 +213,7 @@ useHelp(): void {
   cell.fixed = true;
 
   this.helpsUsed++;
+  this.saveGame();
 }
 
 
@@ -218,17 +239,30 @@ getFormattedTime(): string {
 }
 
 checkWin(): void {
+
   const completed = this.board.every(row =>
     row.every(cell =>
       cell.value === cell.solutionValue && !cell.error
     )
   );
 
-  if (completed) {
-    this.gameCompleted = true;
-    this.paused = true;
-    alert(`Ganaste. Tiempo: ${this.getFormattedTime()}`);
+  if (!completed) {
+    return;
   }
+
+  this.gameCompleted = true;
+  this.paused = true;
+
+  const record: SudokuRecord = {
+    difficulty: this.difficulty,
+    seconds: this.seconds(),
+    date: new Date().toISOString()
+  };
+
+  this.sudokuStorage.saveRecord(record);
+  this.sudokuStorage.clearGame();
+
+  alert(`Ganaste. Tiempo: ${this.getFormattedTime()}`);
 }
 
 newGame(difficulty: Difficulty): void {
@@ -246,6 +280,37 @@ newGame(difficulty: Difficulty): void {
 
   this.selectedRow = null;
   this.selectedCol = null;
+  this.saveGame();
+}
+
+saveGame(): void {
+  if (this.gameCompleted) {
+    return;
+  }
+
+  this.sudokuStorage.saveGame({
+    board: this.board,
+    errors: this.errors,
+    helpsUsed: this.helpsUsed,
+    difficulty: this.difficulty,
+    seconds: this.seconds()
+  });
+}
+getDifficultyRecords(): SudokuRecord[] {
+
+  return this.sudokuStorage
+    .getRecords()
+    .filter(record => record.difficulty === this.difficulty)
+    .sort((a, b) => a.seconds - b.seconds)
+    .slice(0, 10);
+}
+
+formatRecordTime(totalSeconds: number): string {
+
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+
+  return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 }
 
 }
