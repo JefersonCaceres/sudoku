@@ -1,45 +1,28 @@
 import { Injectable } from '@angular/core';
 import { SudokuBoardModel } from '../../../core/models/sudoku-board.model';
+import { SudokuGenerator } from './sudoku-generator';
+import { Difficulty } from '../../../core/models/difficulty.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SudokuGame {
- getInitialBoard(): SudokuBoardModel {
-  const puzzle = [
-[5, 3, 4, 6, 7, 8, 9, 1, 2],
-  [6, 7, 2, 1, 9, 5, 3, 4, 8],
-  [1, 9, 8, 3, 4, 2, 5, 6, 7],
-  [8, 5, 9, 7, 6, 1, 4, 2, 3],
-  [4, 2, 6, 8, 5, 3, 7, 9, 1],
-  [7, 1, 3, 9, 2, 4, 8, 5, 6],
-  [9, 6, 1, 5, 3, 7, 2, 8, 4],
-  [2, 8, 7, 4, 1, 9, 6, 3, 5],
-  [3, 4, 5, 2, 8, 6, 1, 7, null]
-  ];
 
-  const solution = [
-  [5, 3, 4, 6, 7, 8, 9, 1, 2],
-  [6, 7, 2, 1, 9, 5, 3, 4, 8],
-  [1, 9, 8, 3, 4, 2, 5, 6, 7],
-  [8, 5, 9, 7, 6, 1, 4, 2, 3],
-  [4, 2, 6, 8, 5, 3, 7, 9, 1],
-  [7, 1, 3, 9, 2, 4, 8, 5, 6],
-  [9, 6, 1, 5, 3, 7, 2, 8, 4],
-  [2, 8, 7, 4, 1, 9, 6, 3, 5],
-  [3, 4, 5, 2, 8, 6, 1, 7, 9]
-];
+constructor(private readonly sudokuGenerator: SudokuGenerator) {}
 
-return puzzle.map((rowValues, row) =>
-  rowValues.map((value, col) => ({
-    row,
-    col,
-    value,
-    solutionValue: solution[row][col],
-    fixed: value !== null,
-    error: false
-  }))
-);
+ getInitialBoard(difficulty: Difficulty = 'easy'): SudokuBoardModel {
+  const solution = this.sudokuGenerator.generateSolution();
+  const puzzle = this.sudokuGenerator.createPuzzle(solution, difficulty);
 
+  return puzzle.map((rowValues, row) =>
+    rowValues.map((value, col) => ({
+      row,
+      col,
+      value,
+      solutionValue: solution[row][col],
+      fixed: value !== null,
+      error: false
+    }))
+  );
 }
 }

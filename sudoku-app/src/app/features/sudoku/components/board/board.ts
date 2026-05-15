@@ -1,6 +1,8 @@
 import { Component, Input, HostListener, OnInit, OnDestroy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SudokuBoardModel } from '../../../../core/models/sudoku-board.model';
+import { Difficulty } from '../../../../core/models/difficulty.model';
+import { SudokuGame } from '../../services/sudoku-game';
 
 
 
@@ -21,7 +23,14 @@ export class Board implements OnInit, OnDestroy{
   timerId: ReturnType<typeof setInterval> | null = null;
   paused = false;
   gameCompleted = false;
+  difficulty: Difficulty = 'easy';
 
+  constructor(private readonly sudokuGame: SudokuGame) {}
+
+  ngOnInit(): void {
+    this.newGame(this.difficulty);
+    this.startTimer();
+  }
 
   ngOnDestroy(): void {
     if (this.timerId) {
@@ -186,9 +195,6 @@ useHelp(): void {
   this.helpsUsed++;
 }
 
-ngOnInit(): void {
-  this.startTimer();
-}
 
 startTimer(): void {
   this.timerId = setInterval(() => {
@@ -223,6 +229,23 @@ checkWin(): void {
     this.paused = true;
     alert(`Ganaste. Tiempo: ${this.getFormattedTime()}`);
   }
+}
+
+newGame(difficulty: Difficulty): void {
+
+  this.difficulty = difficulty;
+
+  this.board = this.sudokuGame.getInitialBoard(difficulty);
+
+  this.errors = 0;
+  this.helpsUsed = 0;
+  this.seconds.set(0);
+
+  this.gameCompleted = false;
+  this.paused = false;
+
+  this.selectedRow = null;
+  this.selectedCol = null;
 }
 
 }

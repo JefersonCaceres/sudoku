@@ -210,3 +210,30 @@
   color: #64748b;
   background: #f8fafc;
 }
+
+
+.difficulty-selector {
+
+  margin-bottom: 20px;
+
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+
+  gap: 8px;
+}
+
+.difficulty-selector button {
+
+  padding: 8px 14px;
+
+  border: none;
+  border-radius: 8px;
+
+  background: #1e293b;
+  color: white;
+
+  font-weight: bold;
+
+  cursor: pointer;
+}

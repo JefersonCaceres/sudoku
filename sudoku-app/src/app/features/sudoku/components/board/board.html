@@ -7,6 +7,17 @@
 <button class="pause-button" (click)="togglePause()">
   {{ paused ? 'Continuar' : 'Pausar' }}
 </button>
+
+<div class="difficulty-selector">
+
+  <button (click)="newGame('easy')">Fácil</button>
+  <button (click)="newGame('medium')">Medio</button>
+  <button (click)="newGame('hard')">Difícil</button>
+  <button (click)="newGame('extreme')">Extremo</button>
+  <button (click)="newGame('master')">Maestro</button>
+
+</div>
+
 @if (!paused) {
 <div class="board">
   @for (row of board; track $index) {
