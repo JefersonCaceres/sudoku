@@ -24,7 +24,7 @@ export class Board implements OnInit, OnDestroy{
   timerId: ReturnType<typeof setInterval> | null = null;
   paused = false;
   gameCompleted = false;
-  difficulty: Difficulty = 'easy';
+  @Input() difficulty: Difficulty = 'easy';
 
 constructor(private readonly sudokuGame: SudokuGame,
   private readonly sudokuStorage: SudokuStorage) {}

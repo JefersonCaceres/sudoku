@@ -4,10 +4,10 @@
   <p>Elige una dificultad</p>
 
   <div class="levels">
-    <a href="/game?difficulty=easy">Fácil</a>
-    <a href="/game?difficulty=medium">Medio</a>
-    <a href="/game?difficulty=hard">Difícil</a>
-    <a href="/game?difficulty=extreme">Extremo</a>
-    <a href="/game?difficulty=master">Maestro</a>
+    <a routerLink="/game" [queryParams]="{ difficulty: 'easy' }">Fácil</a>
+    <a routerLink="/game" [queryParams]="{ difficulty: 'medium' }">Medio</a>
+    <a routerLink="/game" [queryParams]="{ difficulty: 'hard' }">Difícil</a>
+    <a routerLink="/game" [queryParams]="{ difficulty: 'extreme' }">Extremo</a>
+    <a routerLink="/game" [queryParams]="{ difficulty: 'master' }">Maestro</a>
   </div>
 </section>
